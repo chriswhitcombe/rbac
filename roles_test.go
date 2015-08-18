@@ -73,3 +73,17 @@ func TestSpaceMatcher(t *testing.T) {
 	err := rm.AddMethodMapping("            ", "POST", []string{"tester.file"})
 	assert.NotNil(t, err, "Matcher must be non empty string")
 }
+
+func TestMatcherWithURLQueryString(t *testing.T) {
+	rm := NewRoleMapper()
+	rm.AddMethodMapping("/test", "POST", []string{"tester"})
+	assert.True(t, rm.RoleMethodValid("/test", "POST", "tester"), "Path should match")
+	assert.True(t, rm.RoleMethodValid("/test?user=fred", "POST", "tester"), "Path should match")
+	assert.True(t, rm.RoleMethodValid("/test?user=fred&auth=bob", "POST", "tester"), "Path should match")
+}
+
+func TestMatcherWithSubURL(t *testing.T) {
+	rm := NewRoleMapper()
+	rm.AddMethodMapping("/test", "POST", []string{"tester"})
+	assert.True(t, rm.RoleMethodValid("/test/list/do/thing", "POST", "tester"), "Path should match")
+}
